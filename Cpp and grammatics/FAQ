@@ -1,0 +1,76 @@
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+
+move and copy constructor
+complex_stack &operator = (complex_stack &stack)
+{
+    sz = stack.sz;
+    current = stack.current;
+    delete [] head_pointer;
+    head_pointer = new complex [sz];
+    memcpy(head_pointer, stack.head_pointer, sizeof(complex) * (current + 1));
+    return *this;
+}
+
+complex_stack &operator = (complex_stack &&stack)
+{
+    sz = stack.sz;
+    current = stack.current;
+    delete [] head_pointer;
+    head_pointer = stack.head_pointer;
+    stack.head_pointer = nullptr;
+    return *this;
+}
+
+
+friends 
+friend complex_stack operator ~ (const complex_stack &stack)
+
+        
+for_each
+
+struct Sum
+{
+    double s = 0;
+    void operator() (double n)
+    {
+        s += n;
+    }
+};
+Sum res = for_each(begin, end, Sum());
+
+
+Ровно по 10 знаков    
+cout << fixed << setprecision(10) << res.s / count << endl;
+
+вывод через итератор
+ostream_iterator<int> out_it(cout,"\n");
+out_it = 1;
+copy(v1.begin(), v1.end(), out_it);
+
+
+template functions
+template <typename IT, typename Compare = less<typename iterator_traits<IT>::value_type>>
+void selection_sort(IT first, IT last, Compare comp = Compare())
+
+
+
+oss и iss
+std::ostringstream oss;
+  oss << "One hundred and one: " << 101;
+  std::string s = oss.str();
+
+std::istringstream iss;
+  std::string strvalues = "32 240 2 1450";
+
+  iss.str (strvalues);
+
+  for (int n=0; n<4; n++)
+  {
+    int val;
+    iss >> val
+

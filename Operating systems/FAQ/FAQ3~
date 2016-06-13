@@ -1,0 +1,85 @@
+//
+1. Стоит закрывать как можно быстрее те части pipe'ов, которые вам в этом месте больше не нужны. иначе вероятен deadlock
+2. Программы в pipeline работают параллельно, ввод-вывод между ними происходит через n-1 независимых pipe'ов.
+3. pause — плохая идея для синхронизации процессов, поскольку она не поможет вам поймать пропустить сигнал(ы), пришедшие в момент непосредственно перед её вызовом.
+4. fflush
+5. volatile
+6. Pid и race condition
+
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <assert.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <limits.h>
+#include <signal.h>
+#include <math.h>
+
+
+SIGCHLD
+SIGPIPE
+SIGUSR1
+SIGUSR2
+SIGTERM
+SIGINT
+SIGABRT
+SIGALRM
+// пинг понг - 8-4 и 9-4
+
+// как открывать файлы
+fd = open("input.txt", O_WRONLY | O_TRUNC | O_CREAT, 0666);
+fd = open("input.txt", O_WRONLY | O_APPEND | O_CREAT, 0666);
+
+//dup2 делается так в pipe 
+dup2(pfd[0], 0);
+dup2(pfd[1], 1);
+//в файлы
+dup2(fdin, 0);
+dup2(fdout, 1);
+
+
+
+// выполнит процесс и обработает ошибки (средне работает)
+int execute(char * proc) 
+{ 
+    int flag;
+    int pid;
+    int status;
+    if ((pid = fork())) {
+        wait(&status);
+        if WIFSIGNALED(status) return 1;
+        if WIFEXITED(status) {
+        flag = WEXITSTATUS(status);
+        } else return 1;
+    } else {
+        //child
+        execlp("/bin/sh", "/bin/sh", "-c", proc, NULL);
+        return 1;
+    }
+    return flag;
+}
+
+// проверка на ошибки у процесса
+if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+    exit(1);
+}
+WIFSIGNALLED
+
+// решает проблемы с зомби
+while (wait(NULL) != -1);
+
+
+// обработчики сигналлов
+void hnd(int s) {}
+
+signal(SIGUSR1, hnd);
+signal(SIGUSR1, SIG_DFL); // стандартный
+signal(SIGUSR1, SIG_IGN); // игнорировать
+
+

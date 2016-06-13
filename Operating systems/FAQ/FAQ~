@@ -1,0 +1,198 @@
+gcc -Wall -Werror -std=gnu11 4.c -o4
+
+
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <assert.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <limits.h>
+#include <math.h>
+#include <signal.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/msg.h>
+#include <ctype.h>
+
+enum 
+{
+    A = 4, 
+    B = 5
+}
+
+//cчитываем следующий элемент
+enum { BUFS = 16 };
+unsigned char buf[BUFS];
+int nr = 0, ind;
+
+int
+get(int fd)
+{
+    if (nr == ind) {
+        nr = read(fd, buf, BUFS);
+        ind = 0;
+    }
+    if (!nr)
+        return -1;
+    return buf[ind++];
+}
+
+
+//читаем структуру
+void
+read_file(int fd, void *p, size_t sz)
+{
+    char *pp = p;
+    ssize_t read_size;
+    while (sz > 0) {
+        read_size = read(fd, pp, sz);
+        sz -= read_size;
+        pp += read_size;
+    }
+}
+
+// читаем поля структуры
+void
+read_file(int fd, struct Data *p)
+{
+    int sz = I;
+    char *pp = (char *)(&p->x);
+    ssize_t read_size = 0;
+    while (sz > 0) {
+        read_size = read(fd, pp, sz);
+        pp += read_size;
+        sz -= read_size;
+    }
+    read_size = 0;
+    sz = LL;
+    pp = (char *)(&p->y);
+    while (sz > 0) {
+        read_size = read(fd, pp, sz);
+        pp += read_size;
+        sz -= read_size;
+    }
+}
+
+
+// выводим поля структуры
+void
+write_file(int fd, struct Data *p)
+{
+    int sz = I;
+    char *pp = (char *)(&p->x);
+    ssize_t write_size = 0;
+    while (sz > 0) {
+        write_size = write(fd, pp, sz);
+        pp += write_size;
+        sz -= write_size;
+    }
+    write_size = 0;
+    pp = (char *)(&p->y);
+    sz = LL;
+    while (sz > 0) {
+        write_size = write(fd, pp, sz);
+        pp += write_size;
+        sz -= write_size;
+    }
+}
+
+//обход каталогов
+int
+main(int argc,const char *argv[])
+{
+    char path[PATH_MAX] = {};
+    struct stat stb;
+    DIR *d = opendir(argv[1]);
+    struct dirent *dd = NULL;
+    long long size = 0;
+    while ((dd = readdir(d)) != NULL) {
+        if (!strcmp(dd->d_name, ".") || !strcmp(dd->d_name, "..")) {
+            continue;
+        }
+        snprintf(path, sizeof(path), "%s/%s", argv[1], dd->d_name);
+        if ((lstat(path, &stb) != -1) && S_ISREG(stb.st_mode)) {
+            size += stb.st_size;
+        }
+    }
+    printf("%lld\n", size);
+    closedir(d);
+    return 0;
+}
+
+stb {
+st_dev - номер
+st_ino - номер инд дескриптора
+st_mode - права доступа + тип - права = st_mode &077777
+st_nref - счетчик ссылок
+st_size - размер
+st_uid - id
+st_gid - gid
+st_mtime - дата модификации
+st_atime - дата доступа
+st_ctime - дата создания
+}
+
+//команды
+int fd = open(argv[1], O_RDONLY);
+O_WRONLY
+O_RDWR
+
+lseek(fd, sizeof(pp) * index, SEEK_SET);
+возращает с начала!!!
+
+close(fd);
+
+read_size = read(fd, pp, sz);
+
+write_size = write(fd, pp, sz);
+        
+S_ISREG(stb.st_mode)
+S_ISDIR(stb.st_mode)
+S_ISLINK(stb.st_mode)
+S_ISBLK(stb.st_mode)
+
+lstat(path, &stb) //не переходит по ссылкам
+stat(path, &stb) //переходит по ссылкам
+fstat(fd, &stb) //по фд
+
+mkdir
+rmdir
+unlink
+link
+symlink
+readlink
+rename
+
+perms:
+mkdir("mydir", S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH);
+mkdir("mydir", S_IRWXU | S_IRWXG | S_IRWXO);
+mkdir("mydir", ACCESSPERMS);
+User: S_IRUSR (read), S_IWUSR (write), S_IXUSR (execute)
+Group: S_IRGRP (read), S_IWGRP (write), S_IXGRP (execute)
+Others: S_IROTH (read), S_IWOTH (write), S_IXOTH (execute)
+
+
+
+CC = gcc
+CFLAGS = -Wall -O2
+LDFLAGS = -s
+CFILES = arthur.c trillian.c prosser.c
+HFILES = arthur.h trillian.h prosser.h
+OBJECTS = $(CFILES:.c=.o)
+TARGET = earth
+all : $(TARGET)
+earth : $(OBJECTS)
+	$(CC) $(LDFLAGS) $^ -o $@
+include deps.make
+deps.make : $(CFILES) $(HFILES)
+	gcc -MM $(CFILES) > deps.make
+clean :
+	rm -f $(TARGET) *.o 
+
+

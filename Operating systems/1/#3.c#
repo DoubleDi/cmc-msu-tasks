@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+long long
+mysubstr(char * sample, char * text)
+{
+    long long position_star = strchr(sample, '*') - sample;
+    printf("%lld", position_star);
+    long long text_length = strlen(text);
+    char half[100];
+
+    memcpy(half, sample, position_star - 1);
+    puts("aza");
+    half[strlen(half)] = '\0';
+    puts(half);
+    return 0;
+}
+
+//#ifdef DEBUG
+int
+main(void)
+{
+    char text[1000] = "abcabcabc";
+    char sample[100] = "abc*abc";
+    long long a = mysubstr(sample, text);
+   // printf("%lld", a);
+    return 0;
+}
+//#endif

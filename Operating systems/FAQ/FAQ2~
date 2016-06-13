@@ -1,0 +1,56 @@
+//random number [low, high)
+#include <stdio.h>
+double ran = rand() / (RAND_MAX + 1.0);
+printf("%ld\n", (int)(ran * (high - low)) + low);
+
+//строка параметр 
+const unsigned char *
+// cтрока результат 
+unsigned char * или char *
+char *strdup(char *)//потом free
+fgets, snprintf, sscanf
+
+//vector
+int *v = 0;
+int a = 0;
+int u = 0;
+int x;
+while (scanf("%d", &x) == 1) {
+    if (u == a) {
+        if(!(a*=2)) a = 16;
+        v = realloc(v, a * sizeof(v[0]));
+    }
+    v[u + 1] = x;
+}
+
+//time
+time_t tme;
+time_t time (time_t *) //текущее время time(tme);
+struct tm * localtime(time_t *)
+gmtime
+//считать и вывести время
+    time_t tm = time(NULL);
+    struct tm *timestr;
+    timestr = localtime(&tm);
+    tm = mktime(timestr);
+    printf("%lld", (long long int)tm);
+
+tm {
+tm_year +1900
+tm_mon +1
+tm_mday 1:31
+tm_hour 0:23
+tm_min 0:59
+tm_sec 0:59
+tm_isdst -1 all 0 - зимнее 1 - летнее
+tm_wday 1:7
+tm_yday 1:365
+}
+
+ctime(t) - круто
+
+GDB 
+gcc -g -Wall -Werror -std=gnu11 -02 prog.c -oprog
+valgrind ./prog
+valgrind --leak-check=full ./prog
+

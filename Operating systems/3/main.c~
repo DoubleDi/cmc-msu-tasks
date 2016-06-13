@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/file.h>
+#include <ctype.h>
+
+enum { BUFS = 16 };
+unsigned char buf[BUFS];
+int nr, index;
+
+int
+get(int fd)
+{
+    if (nr == index) {
+        nr = read(fd, buf, BUFS);
+        index = 0;
+    }
+    if (!nr)
+        return -1;
+    return buf[index++];
+}
+
+int
+main(void)
+{
+    int fd = 0, sgn = 1, ch, fl = 0, num = 0;
+    long long int ans = 0;
+
+    while ((ch = get(fd)) != -1) {
+        if (ch == '-') {
+            sgn = -1;
+        } else if (isdigit(ch)) {
+            fl = 1;
+            num = num * 10 + ch;
+        } else if (isspace(ch)) {
+            if (fl) {
+                fl = 0;
+                ans += sgn * num;
+                num = 0;
+                sgn = 1;
+            }
+        }
+    }
+    printf("%lld\n", ans);
+    return 0;
+}

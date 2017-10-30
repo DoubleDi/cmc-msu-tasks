@@ -1,0 +1,11 @@
+(defun znch(l)
+    (cond ((null l)nil)
+          ((> (car l) 0) (znnch (cdr l) 1))
+          ((< (car l) 0) (znnch (cdr l) -1))))
+
+(defun znnch(l z)
+    (cond ((null l)T)
+          ((and (>= z 0) (>= (car l) 0))nil)
+          ((and (<= z 0) (<= (car l) 0))nil)
+          (T(znnch (cdr l) (- 0 z)))))
+(znch '(-1 -1 -1))

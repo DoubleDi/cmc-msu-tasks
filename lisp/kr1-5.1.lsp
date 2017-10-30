@@ -1,0 +1,6 @@
+(defun newlist (l)
+    (cond ((null l)())
+          ((null (cadr l))(list (car l)))
+          ((null (caddr l))(list (+ (car l)(cadr l))))
+          (T(cons (+ (+ (caddr l) (cadr l)) (car l)) (newlist (cdddr l))))))
+(newlist '(1 2 3 4 5 6 7 8 9) )

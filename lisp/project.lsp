@@ -1,0 +1,152 @@
+; Денис Дорожкин Сергеевич 325 группа
+; Вариант РГ -> ДКА
+; H - начальное состояние 
+; S - конечное состояние
+; Входные данные вида: ((H = \a A \| \a B) (H = \a B) (A = \b) (B = \a))
+; Выходные данные вида: (((H) |a| (B C)) ((B C) |b| (S C B)) ((B C) |c| (S))
+; Примеры:
+;(defun p() '((H = \a A) (H = \a B) (A = \b) (B = \a)))
+;(defun p() '((H = \a A) (H = \a B) (A = \a A) (A = \b S) (B = \b B) (B = \a S)))
+;(defun p() '((H = \a A) (A = \b A) (A = \b B) (B = \a B) (B = \a A) (B = \b S)))
+;(defun p() '((H = \a A) (H = \a B) (H = \b B) (A = \a A) (B = \a B) (B = \a A) (A = \a S) (B = \b S)))
+;(defun p() '((H = \a B) (H = \a C) (B = \b S) (B = \b C) (C = \b B) (C = \c S)))
+; Запускать нужно через функцию prepreprocess
+; Например: (prepreprocess (p)), где p -  константа, определенная выше
+
+; Первичное пробразование грамматики в НКА
+(defun insertinto (l m)
+    (cond ((null l)())
+          (T(cond ((or (null (cadr l)) (eql (cadr l) '\|))
+                  (cons (list (list m) (car l) 'S) (insertinto (cddr l) m)))
+                  (T(cons (list (list m) (car l) (cadr l)) (insertinto (cdddr l) m)))))))
+
+(defun parseline (l)
+    (cond ((null l)())
+          (T(insertinto (cddr l) (car l)))))
+
+(defun makenka (l)
+    (cond ((null l)())
+          (T(append (parseline (car l)) (makenka (cdr l))))))
+
+; Поиск по массиву
+(defun ordinaryfind (e l)
+    (cond ((null l) nil)
+          ((equal e (car l)) T)
+          (T (ordinaryfind e (cdr l)))))
+
+; Сравнение множеств
+(defun equalasenum (l m)
+    (cond ((or (null l) (null m)) T)
+          ((ordinaryfind (car l) m) (equalasenum (cdr l) m))
+          (T nil)))
+
+; Обертка над сравнением множеств для просмотра длинны
+(defun equalasenum2 (l m) 
+    (cond ((and (atom l) (atom m)) (eql l m))
+          ((eql (length l) (length m)) (equalasenum l m))
+          (T nil)))
+
+; Поиск по массиву со сравнением в качестве множеств
+(defun enumfind (e l)
+    (cond ((null l) nil)
+          ((equalasenum2 e (car l)) T)
+          (T (enumfind e (cdr l)))))
+          
+; Поиск одинаковых состояний в НКА
+(defun findsame (x y l)
+    (cond ((null l)())
+          ((and (equalasenum2 (caar l) x) (eql (cadar l) y)) (cons (caddar l) (findsame x y (cdr l))))
+          (T (findsame x y (cdr l)))))
+          
+; Уникализация символов при детерминировании НКА
+(defun uniq (l) 
+    (cond ((null l) ())
+          ((enumfind (car l) (cdr l)) (uniq (cdr l)))
+          (T (cons (car l) (uniq (cdr l))))))
+    
+; Удалегние одинаковых состояний в НКА
+(defun deletesame (x y l)
+    (cond ((null l)())
+          ((and (equalasenum2 (caar l) x) (eql (cadar l) y)) (deletesame x y (cdr l)))
+          (T (cons (car l) (deletesame x y (cdr l))))))
+
+; Главная функция преобразования из НКА в ДКА
+(defun makedka (l)
+    (cond ((null l)())
+          (T(cons (list (caar l) (cadar l) (uniq (cons (caddar l) (findsame (caar l) (cadar l) (cdr l))))) (makedka (deletesame (caar l) (cadar l) (cdr l)))))))
+
+; Поиск по структре КА
+(defun myfind (e l)
+    (cond ((null l) nil)
+          ((equalasenum2 e (caar l)) T)
+          (T (myfind e (cdr l)))))
+
+; Получение новых (необработанных) состояний в алгоритме детерминирования
+(defun getnewpos (l all)
+    (cond ((null l) ())
+          ((and (length (caddar l)) (not (myfind (caddar l) all))) (cons (caddar l) (getnewpos (cdr l) all)))
+          (T (getnewpos (cdr l) all))))
+
+; Фильтрация новых (необработанных) состояний в алгоритме детерминирования
+(defun filternewpos (l)
+    (cond ((null l) ())
+          ((enumfind (car l) (cdr l)) (filternewpos (cdr l)))
+          (T (cons (car l) (filternewpos (cdr l))))))
+
+; Получение всех возможных значений для ребер
+(defun getsmalllet (all res)
+    (cond ((null all) res)
+          ((not (enumfind (cadar all) res)) (getsmalllet (cdr all) (append res (list (cadar all)))))
+          (T (getsmalllet (cdr all) res))))
+
+; Функции детермининирования автомата
+(defun getcondbyone (c all let)
+    (cond ((null all) ())
+          ((and (equal c (caar all)) (equal let (cadar all))) (caddar all))
+          (T (getcondbyone c (cdr all) let))))
+          
+(defun getcondbylet (l all let)
+    (cond ((null l) ())
+          (T (append (getcondbyone (list (car l)) all let) (getcondbylet (cdr l) all let)))))
+
+(defun getcond (l all lets)
+    (cond ((null lets) ())
+          ((getcondbylet l all (car lets)) (cons (list l (car lets) (uniq (getcondbylet l all (car lets)))) (getcond l all (cdr lets))))
+          (T (getcond l all (cdr lets)))))
+
+(defun addnewconds (l all)
+    (cond ((null l) all)
+          (T (addnewconds (cdr l) (append all (getcond (car l) all (getsmalllet all ())))))))
+
+; Функции удаления недостижимых элементов
+(defun getothers (l k) 
+    (cond ((null l) k)
+          ((enumfind (caar l) k) (cond ((enumfind (caddar l) k) (getothers (cdr l) k))
+          (T (getothers (cdr l) (cons (caddar l) k)))))
+          (T (getothers (cdr l) k))))
+  
+(defun getothersmulti (l k)
+    (cond ((null l) k)
+          ((equal (getothers l k) k) k)
+          (T (getothersmulti l (getothers l k)))))
+  
+(defun cropuseless (l other)
+    (cond ((null l) ())
+          ((enumfind (caar l) other) (cons (car l) (cropuseless (cdr l) other)))
+          (T (cropuseless (cdr l) other))))
+
+; Главные функции обработки автомата
+(defun process (dka)
+    (let ((newdka (addnewconds (filternewpos (getnewpos dka dka)) dka)))
+          (cond ((not (equal newdka dka)) (process newdka)) 
+                (T dka))))
+                
+(defun makelist (nka)
+    (cond ((null nka) ())
+          (t (cons (list (caar nka) (cadar nka) (list (caddar nka))) (makelist (cdr nka))))))
+
+(defun preprocess (in) (process (makedka (cropuseless (makenka in) (getothersmulti (makelist (makenka in)) '((H)))))))
+
+(defun prepreprocess (in) (cropuseless (preprocess in) (getothersmulti (preprocess in) '((H)))))
+ 
+(prepreprocess (p))

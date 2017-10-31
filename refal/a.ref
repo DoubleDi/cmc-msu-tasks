@@ -1,0 +1,78 @@
+Cparser start
+    extrn card, numb, print
+    extrn mul, sub, add, p1, m1, div, dr
+    entry Go
+Go = <prepdata <card>>
+
+prepdata v1S(' ')Av2 = <prepdata v1v2>
+ e1v(D)2e3 = <prepdata e1<numb v2>e3>
+ v1')'e3 = <prepdata <pairs v1>e3>
+ v1'(' = <print 'ERROR'>
+ v1 = <expr v1>
+
+pairs R e1'('e2 = e1(e2)
+ v1 = <print 'ERROR'>
+
+expr R v1','v2 = <expr v1><pexpr v2>
+ v1 = <pexpr v1>
+
+pexpr v1S('&|')ASAv2 = <if v1SASAv2>
+ R v1S('+-*/%')A'='v2 = v1(SA'=')<pexpr v2>
+ R v1S('<>')ASA'='v2 = v1(SASA'=')<pexpr v2>
+ R v1'='v2 = v1<pexpr v2>
+ v1=<if v1>
+
+if v1':'v2 = <if <pairl v1>v2>
+        v1 = <orif v1>
+
+pairl R v2'?'v3 = <orif v2><expr v3>
+
+orif R v1'||'v2 = <orif v1><andif v2>
+ v1 = <andif v1>
+
+andif R v1'&&'v2 = <andif v1><slag v2>
+ v1'='v2 = <expr v1'='v2>
+ v1 = <slag v1>
+
+slag e1S(D)BS('+-')AS(D)Ce2 = <count SA(<slag e1SB>)<slag SCe2>>
+ v1 = <slagp v1>
+
+count '*'(v1)v2 = <mul (v1) v2>
+ '/'(v1)v2 = <div (v1)v2>
+ '%'(v1)v2 = <getp <dr (v1)v2>>
+ '-'(v1)v2 = <sub (v1)v2>
+ '+'(v1)v2 = <add (v1)v2>
+
+slagp v1S('/%*')Av2 = <count SA(<slagp v1>)<slagp v2>>
+ v1 = <unary v1>
+
+getp e1(e2) = e2
+
+unary S('-+')ASAv1 = <countpr SASA(<unary v1>)>
+ S('-+!')Av1 = <countpr SA(<unary v1>)>
+ v1 = <postfix v1>
+
+countpr '++'(v1) = <p1 v1>
+ '--'(v1) = <m1 v1>
+ '+'(v1) = v1
+ '-'(v1) = <sub /0/ v1>
+ '!'(v1) = <neg v1>
+
+neg /0/ = /1/
+ e1 = /0/
+
+postfix (v1) = <prim (v1)>
+ S(N)A = <prim SA>
+ v1S('+-')ASA = <postfix1 v1SASA>
+ v1 = v1
+
+prim (v1) = <expr v1>
+ S(N)A = SA
+
+postfix1 v1S('+-')ASA = <countpos (<postfix1 v1>)SASA>
+         v1 = v1
+
+countpos (v1)'--' = <m1 v1>
+ (v1)'++' = <p1 v1>
+
+ end

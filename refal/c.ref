@@ -1,0 +1,7 @@
+Cparser start
+    extrn card, numb, print
+    extrn mul, sub, add, p1, m1, div, dr
+    entry Go
+Go = <print <test <card>>>
+test v(L)1=v(L)1
+ end

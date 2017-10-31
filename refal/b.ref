@@ -1,0 +1,147 @@
+Cparser start
+    extrn card, numb, print, br, dg, cp, dgall, rp
+    extrn mul, sub, add, p1, m1, div, dr, nrel
+    entry Go
+Go = <expr <print <notunary <prepdata <simplify <spacenum <card>>>>>>>
+
+prepdata v1')'e3 = <prepdata <pairs v1>e3>
+ v1'(' = <print 'ERROR'>
+ v1 = v1
+
+notunary '-'v(NL)1e2 = (/0/'-'v1)<notunary e2>
+ e4SAS((NL'-'))1'-'v(NL)2e3 = e4SAS1(/0/'-'v2)<notunary e3>
+ e4SAS((NL'-'))1'-'W2e3 = e4SAS1(/0/'-'W2)<notunary e3>
+ e1(e2)e3 = <notunary e1>(<notunary e2>)e3
+ e1 = e1
+
+spacenum v1S(' ')Av2 = <spacenum v1v2>
+ v(D)2w((D))5e3 = <spacenum <numb v2>w5e3>
+ e1w((D))4v(D)2 = <spacenum e1w4<numb v2>>
+ R e1w((D))4v(D)2w((D))5e3 = <spacenum e1w4<numb v2>w5e3>
+ e1 = e1
+
+pairs R e1'('e2 = e1(e2)
+ v1 = v1
+
+prepdata2 v1':'v2 = <prepdata2 <pairs2 v1>'#'v2>
+ v1 = v1
+
+pairs2 R e1'?'e2 = e1'$'(e2)
+  v1 = v1
+
+
+simplify e1'('v(L)2')'e3 = <simplify e1v2e3>
+ R v1','v2 = <simplify v1>','<simple v2>
+ v1 = <simple v1>
+
+simple e1v(L)3S('+-')ASAe2 = <simple e1v3e2>','<simplify v3'='v3SA/1/>','
+ e1v(L)3S('+-')ASAe2 = <simple e1v3e2>','<simplify v3'='v3SA/1/>','
+ e1S('+-')ASAv(L)3e2 = <simple e1(v3'='v3SA/1/)e2>','
+ e1v(L)3S('+-*/%')A'='e2 = <simple e1v3'='v3SA(<simple e2>)>
+ e1v(L)3S('><')ASA'='e2 = <simple e1v3'='v3SASA(<simple e2>)>
+ e1 = e1
+
+expr R e1',,'e2 = <expr e1','e2>
+ v1',' = <expr v1>
+ e1','v(L)2','e3 = <expr e1','e3>
+ R v1','v2 = <expr v1><pexpr v2>
+ v1 = <pexpr v1>
+
+pexpr v(L)1'='v2 = <rp v1'='<print <getnum2 <pexpr v2>>>><cp v1>
+ v1 =  <if  <prepdata2 v1>>
+
+getnum2 v(N)1 = v1
+ '-'v(N)1 = <print '-'v1>
+ '-'v1 = '-'<cp v1>
+
+if v1'$'v2'#'v3 = <if <tern <bool <getnum <orif v1>>>'$'v2'#'v3>>
+ v1 = <orif v1>
+
+tern /1/'$'v2'#'v3 = <if v2>
+ /0/'$'v2'#'v3 = <if v3>
+
+bool /0/ = /0/
+ v1 = /1/
+
+orif R v1'||'v2 = <or (<orif v1>)<andif v2>>
+ v1 = <andif v1>
+
+or (/0/)v2 = <bool v2>
+ (v1)v2 = <bool v1>
+
+andif R v1'&&'v2 = <and (<andif v1>)<otn v2>>
+ v1 = <otn v1>
+
+otn R v1S('<>!=')A'='v2 = <cmp SA'='<nrel (<getnum <otn <slag v1>>>)<getnum +
+ <slag v2>>>>
+ e1W(('<>'))CS('<>')AW(('<>'))Be2 = <cmp SA<nrel +
+ (<getnum <otn <slag e1WB>>>)<getnum<slag WCe2>>>>
+ v1 = <slag v1>
+
+cmp '==='e1 = /1/
+ '=='SAe1 = /0/
+ '!='S(('='))Ae1 = /1/
+ '!='SAe1 = /0/
+ '<='S('<=')Ae1 = /1/
+ '<='SAe1 = /0/
+ '>='S('>=')Ae1 = /1/
+ '>='SAe1 = /0/
+ '>>'e1 = /1/
+ '>'SAe1 = /0/
+ '<<'e1 = /1/
+ '<'SAe1 = /0/
+
+and (/0/)v2 = /0/
+ (v1)v2 = <bool v2>
+
+
+slag R e1WBS('+-')AWCe2 = <count <print SA(<slag e1WB>)<slag WCe2>>>
+ v1 = <slagp v1>
+
+getnum v(N)1 = v1
+ v1 = <cp v1>
+
+count '*'('-'v1)'-'v2 = <mul (<getnum v1>) <getnum v2>>
+ '*'('-'v1)v2 = '-'<mul (<getnum v1>) <getnum v2>>
+ '*'(v1)'-'v2 = '-'<mul (<getnum v1>) <getnum v2>>
+ '*'(v1)v2 = <mul (<getnum v1>) <getnum v2>>
+ '/'('-'v1)'-'v2 = <div (<getnum v1>)<getnum v2>>
+ '/'('-'v1)v2 = '-'<div (<getnum v1>)<getnum v2>>
+ '/'(v1)'-'v2 = '-'<div (<getnum v1>)<getnum v2>>
+ '/'(v1)v2 = <div (<getnum v1>)<getnum v2>>
+ '%'(v1)v2 = <getp <dr (<getnum v1>)<getnum v2>>>
+ '-'('-'v1)'-'v2 = <sub (<getnum v2>)<getnum v1>>
+ '-'('-'v1)v2 = '-'<add (<getnum v1>)<getnum v2>>
+ '-'(v1)'-'v2 = <add (<getnum v1>)<getnum v2>>
+ '-'(v1)v2 = <sub (<getnum v1>)<getnum v2>>
+ '+'('-'v1)'-'v2 = '-'<add (<getnum v1>)<getnum v2>>
+ '+'('-'v1)v2 = <sub (<getnum v2>)<getnum v1>>
+ '+'(v1)'-'v2 = <sub (<getnum v1>)<getnum v2>>
+ '+'(v1)v2 = <add (<getnum v1>)<getnum v2>>
+ '>>'('-'v1)/0/ = '-'v1
+ '>>'(v1)/0/ = v1
+ '>>'('-'v1)v2 = <count '>>'('-'<div (<getnum v1>)/2/>)<m1 <getnum v2>>>
+ '>>'(v1)v2 = <count '>>'(<div (<getnum v1>)/2/>)<m1 <getnum v2>>>
+ '<<'('-'v1)/0/ = '-'<getnum v1>
+ '<<'(v1)/0/ = <getnum v1>
+ '<<'('-'v1)v2 = <count '<<'('-'<mul (<getnum v1>)/2/>)<m1 <getnum v2>>>
+ '<<'(v1)v2 = <count '<<'(<mul (<getnum v1>)/2/>)<m1 <getnum v2>>>
+
+slagp R v1S('/%*')Av2 = <count SA(<slagp v1>)<slagp v2>>
+ R v1S('><')ASAv2 = <count <print SASA(<slagp v1>)<slagp v2>>>
+ v1 = <unary v1>
+
+getp e1(e2) = e2
+
+unary S('-+!')Av1 = <countpr SA(<unary v1>)>
+ (v1) = <expr v1>
+ v1 = v1
+
+countpr '+'(v1) = <getnum v1>
+ '-'(v1) = <sub (/0/)<getnum v1>>
+ '!'(v1) = <neg <getnum v1>>
+
+neg /0/ = /1/
+ e1 = /0/
+
+ end

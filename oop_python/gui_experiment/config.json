@@ -1,0 +1,49 @@
+{
+    "day": {
+        "0": "Понедельник",
+        "1": "Вторник",
+        "2": "Среда",
+        "3": "Четверг",
+        "4": "Пятница",
+        "5": "Суббота",
+        "6": "Воскресенье"
+    }, 
+    "_price_format": ["cost", "time_need", "worker_need"],
+    "price": {
+        "Двигатель": { "cost": 200, "time_need": 10, "worker_need": 3, "type": "fix" }, 
+        "ТО": { "cost": 100, "time_need": 6, "worker_need": 3, "type": "fix" },
+        "Cпидометр": { "cost": 30, "time_need": 2, "worker_need": 1, "type": "fix" },
+        "Cцепление": { "cost": 100, "time_need": 2, "worker_need": 2, "type": "fix" },
+        "Электрика": { "cost": 200, "time_need": 6, "worker_need": 1, "type": "fix" },
+        
+        "Шина": { "cost": 50, "time_need": 4, "worker_need": 2, "type": "change" },
+        "Коробка": { "cost": 100, "time_need": 6, "worker_need": 2, "type": "change" },
+        "Фары": { "cost": 80, "time_need": 2, "worker_need": 1, "type": "change" },
+        "Руль": { "cost": 50, "time_need": 2, "worker_need": 1, "type": "change" },
+        "Масло": { "cost": 75, "time_need": 2, "worker_need": 1, "type": "change" },
+        "Подвеска": { "cost": 150, "time_need": 4, "worker_need": 2, "type": "change" },
+        
+        "Мойка": { "cost": 50, "time_need": 2, "worker_need": 1, "type": "design" },
+        "Покраска": { "cost": 50, "time_need": 4, "worker_need": 1, "type": "design" },
+        "Графика": { "cost": 200, "time_need": 12, "worker_need": 1, "type": "design" },
+        "Химчистка": { "cost": 100, "time_need": 2, "worker_need": 2, "type": "design" }
+    },
+    "cars_price": {
+        "Жигули": 1, 
+        "Волга": 1, 
+        "Нива": 1, 
+        "Ока": 1, 
+        "Победа": 1, 
+        "Фольцваген": 1.5, 
+        "Ниссан": 1.5,
+        "Мазда": 1.5,
+        "Шевроле": 1.5,
+        "Шкода": 1.5,
+        "Опель": 1.5,
+        "Ауди": 2, 
+        "БМВ" : 2, 
+        "Мерседес": 2, 
+        "Порше": 2, 
+        "Ферари": 2 
+    }
+}

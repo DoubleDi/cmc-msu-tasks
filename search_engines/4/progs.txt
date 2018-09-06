@@ -1,0 +1,7 @@
+1) perl -lnwe 'chomp; $_ =~ s/\[.+?\]//g; $_ =~ s/\(.+?\)//g; $_ =~ s/[\.\?\:]+\s*([А-ЯA-Z]+)/\n$1/g; $_ =~ s/[\.\?\:]+(\s*[^А-ЯA-Z])/$1/g;  print;' 1_b.txt > croped/1_b.txt 
+
+2) perl -lnwe 'BEGIN { $i = 1 } chomp; next unless $_;  $f = open(my $f, ">", "phrase/2_a_$i.txt"); print $f $_; close $f; $i++' croped/2_a.txt 
+
+3) perl -lnwe ' chomp; system("../mystem -l -w -d phrase/$_.txt morph/$_.txt")'
+
+4) perl -lwne 'chomp;  open(my $f, "<", "morph/$_"); my $p = <$f>; $p = join "\n", split /[\{\}\?]/, $p; $p =~ s/\s(\s)/$1/g; $p =~ s/^\s+|\s+$//g;close $f; open($f, ">", "morph2/$_"); print $f $p; close $f' all.txt

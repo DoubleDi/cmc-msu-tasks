@@ -1,3 +1,0 @@
-gcc -std=c99 -c -o ÑFile.o CFile.c
-nasm -f win32 -o AsmFile.o AsmFile.asm
-gcc -o program CFile.o AsmFile.o
